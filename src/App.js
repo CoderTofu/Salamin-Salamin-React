@@ -3,6 +3,10 @@ import './App.css';
 import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
+  const [seconds, setSeconds] = useState(30); // Timer
+  const [emotion, setEmotion] = useState(''); // instruction
+  const [score, setScore] = useState(''); // scoring
+
   // Video Stuff
   const videoRef = useRef();
   const videoWidth = 915;
@@ -55,13 +59,15 @@ function App() {
 
       <div className='app-header'> {/** Top PART */}
         <div className='timer'>
-          {}
+          {seconds} {/** TBA */}
         </div>
         <div className='instruction'>
-
+          <h2 className='instruction-header'>Copy this emotion</h2>
+          <h1 className='emotion'>PLACEHOLDER{emotion}</h1>
+          <img className='emoji' src="/emojis/1.png" alt="" />
         </div>
         <div className='points'>
-
+          Points: placeholder
         </div>
       </div>
 
