@@ -162,9 +162,9 @@ export default function Home({setImageData}) {
     return (
       <div className="home-app">
   
-        <div className='app-header'> {/** Top PART */}
+        <div className='app-header'> 
           <div className='timer'>
-            {seconds} {/** TBA */}
+            {seconds} 
           </div>
           <div className='instruction'>
             <h2 className='instruction-header'>Copy this emotion</h2>
