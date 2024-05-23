@@ -141,10 +141,12 @@ export default function Home({setImageData}) {
           } else{
             setBorderColor("red");
           }
+          document.removeEventListener('keydown', handleKey);
           takeScreenshot();
           setTimeout(() => {
             setBorderColor("black")
             setEmotionToCopy(getRandomEmotion(lastIdx));
+            document.addEventListener('keydown', handleKey);
           }, 1000)
         }
         if(event.code === 'KeyP') { // press p to pass 
