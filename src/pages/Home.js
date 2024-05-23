@@ -62,13 +62,8 @@ export default function Home({setImageData}) {
       }
     }, [isStarted, seconds]);
   
-    
-    // useEffect(() => {
-    //   setImageData([]);
-    // }, [setImageData]);
 
     useEffect(() => {
-
         // Assign the canvas element to the videoCanvasRef
         videoCanvasRef.current = document.getElementById('video-canvas');
     
@@ -92,13 +87,18 @@ export default function Home({setImageData}) {
             .catch((err) => console.error('Error accessing webcam:', err));
         };
     
-        document.addEventListener('keydown', handleKey)
         loadModels();
         setImageData([]);
+    }, []);
+
+    // FOR KEY PRESSES
+    useEffect(() => {
+        document.addEventListener('keydown', handleKey)
+
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
-    }, []);
+    }, [emotionToCopy])
 
   
     // To detect emotions
@@ -152,7 +152,7 @@ export default function Home({setImageData}) {
         setImageData(prevData => [
             ...prevData,
             {
-                emotion: emotion, // Assuming emotion is defined somewhere
+                emotion: emotionToCopy, // Assuming emotion is defined somewhere
                 URL: dataURL
             }
         ]);
