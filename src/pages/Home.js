@@ -68,7 +68,6 @@ export default function Home({setImageData}) {
     // }, [setImageData]);
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKey)
 
         // Assign the canvas element to the videoCanvasRef
         videoCanvasRef.current = document.getElementById('video-canvas');
@@ -93,6 +92,7 @@ export default function Home({setImageData}) {
             .catch((err) => console.error('Error accessing webcam:', err));
         };
     
+        document.addEventListener('keydown', handleKey)
         loadModels();
         setImageData([]);
         return () => {
@@ -156,7 +156,6 @@ export default function Home({setImageData}) {
                 URL: dataURL
             }
         ]);
-        alert("TAKEN")
     };
     
   
