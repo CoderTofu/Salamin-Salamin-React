@@ -1,3 +1,4 @@
+import { isDisabled } from '@testing-library/user-event/dist/utils';
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -31,6 +32,7 @@ export default function Home({setImageData}) {
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
     const [borderColor, setBorderColor] = useState('black'); // video border
+    const [btnDisabled, setBtnDisabled] = useState(false);
     
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
@@ -132,9 +134,31 @@ export default function Home({setImageData}) {
       }, 100);
     }
 
+    const enterBtnHandle = () => {
+      setIsStarted(true);
+      if(emotionToCopyRef.current === emotionRef.current) {
+        setScore((score) => score + 1)
+        setBorderColor("green");
+      } else{
+        setBorderColor("red");
+      }
+      takeScreenshot();
+      setBtnDisabled(true)
+      setTimeout(() => {
+        setBorderColor("black")
+        setEmotionToCopy(getRandomEmotion(lastIdx));
+        setBtnDisabled(false);
+      }, 1000);
+    }
+
+    const passBtnHandle = () => {
+      setIsStarted(true);
+      setEmotionToCopy(getRandomEmotion(lastIdx));
+    }
+
     const handleKey = (event) => {
         if (event.code === 'Space') {
-          if(!isStarted) setIsStarted(true);
+          setIsStarted(true);
           if(emotionToCopyRef.current === emotionRef.current) {
             setScore((score) => score + 1)
             setBorderColor("green");
@@ -150,8 +174,7 @@ export default function Home({setImageData}) {
           }, 1000)
         }
         else if(event.code === 'KeyP') { // press p to pass 
-          if(!isStarted) setIsStarted(true);
-          setEmotionToCopy(getRandomEmotion(lastIdx));
+          passBtnHandle();
         }
     }
 
@@ -209,8 +232,9 @@ export default function Home({setImageData}) {
           </div>
           <div className='app-control'>
             <div>
-              <h3>Start</h3>
-              <button>Space</button>
+              <h3>Enter</h3>
+              <button onClick={() => enterBtnHandle()} disabled={btnDisabled}>Space</button>
+              <button onClick={() => passBtnHandle()} disabled={btnDisabled}>Pass</button>
             </div>
             <div>
                 <Link to={`/over`}>TEST</Link>
