@@ -149,7 +149,8 @@ export default function Home({setImageData}) {
             document.addEventListener('keydown', handleKey);
           }, 1000)
         }
-        if(event.code === 'KeyP') { // press p to pass 
+        else if(event.code === 'KeyP') { // press p to pass 
+          if(!isStarted) setIsStarted(true);
           setEmotionToCopy(getRandomEmotion(lastIdx));
         }
     }
