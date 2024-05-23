@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function Over({imageData}) {
     console.log(imageData);
+    let location = useLocation();
+    const score = location.state === null ? 0 : location.state.score
 
     return (
-        <p>hey</p>
+        <p>Points: {score}</p>
     )
 }
