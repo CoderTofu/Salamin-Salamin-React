@@ -1,4 +1,3 @@
-import { isDisabled } from '@testing-library/user-event/dist/utils';
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -134,14 +133,7 @@ export default function Home({setImageData}) {
     }
 
     const enterBtnHandle = () => {
-      setIsStarted(true);
-      if(emotionToCopyRef.current === emotionRef.current) {
-        setScore((score) => score + 1)
-        setBorderColor("green");
-      } else{
-        setBorderColor("red");
-      }
-      takeScreenshot();
+      enterHandle();
       setBtnDisabled(true)
       setTimeout(() => {
         setBorderColor("black")
@@ -155,17 +147,21 @@ export default function Home({setImageData}) {
       setEmotionToCopy(getRandomEmotion(lastIdx));
     }
 
+    const enterHandle = () => {
+      setIsStarted(true);
+      if(emotionToCopyRef.current === emotionRef.current) {
+        setScore((score) => score + 1)
+        setBorderColor("green");
+      } else{
+        setBorderColor("red");
+      }
+      takeScreenshot();
+    }
+
     const handleKey = (event) => {
         if (event.code === 'Space') {
-          setIsStarted(true);
-          if(emotionToCopyRef.current === emotionRef.current) {
-            setScore((score) => score + 1)
-            setBorderColor("green");
-          } else{
-            setBorderColor("red");
-          }
+          enterHandle();
           document.removeEventListener('keydown', handleKey);
-          takeScreenshot();
           setTimeout(() => {
             setBorderColor("black")
             setEmotionToCopy(getRandomEmotion(lastIdx));
