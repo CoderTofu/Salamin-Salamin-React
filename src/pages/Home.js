@@ -120,6 +120,7 @@ export default function Home({setImageData}) {
         if (event.code === 'Space') {
           if(!isStarted) setIsStarted(true);
           if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
+          setEmotionToCopy(getRandomEmotion());
           takeScreenshot();
         }
         if(event.code === 'KeyP') { // press p to pass 
@@ -128,7 +129,6 @@ export default function Home({setImageData}) {
     }
 
     const takeScreenshot = () => {
-        setEmotionToCopy(getRandomEmotion());
         const imgCanvas = document.createElement('canvas');
         const ctx = imgCanvas.getContext('2d'); 
         const videoElement = document.getElementById('video');
