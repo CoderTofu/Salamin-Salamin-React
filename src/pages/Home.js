@@ -14,7 +14,6 @@ let statusIcons = {
 }
 let emojis = Object.keys(statusIcons);
 const getRandomEmotion = (lastIdx) => {
-  console.log(lastIdx.current);
   let randint;
   do{
     randint = Math.floor(Math.random() * emojis.length)
