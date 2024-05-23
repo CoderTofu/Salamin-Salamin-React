@@ -30,6 +30,7 @@ export default function Home({setImageData}) {
     const lastIdx = useRef(-1);   // ensures no consecutive duplicates
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
+    const [borderColor, setBorderColor] = useState('black'); // video border
     
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
@@ -113,6 +114,7 @@ export default function Home({setImageData}) {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
         if(detections.length === 0){
           setEmotion("neutral")
+          setBorderColor(null)
           return;
         }
         
@@ -133,9 +135,17 @@ export default function Home({setImageData}) {
     const handleKey = (event) => {
         if (event.code === 'Space') {
           if(!isStarted) setIsStarted(true);
-          if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
+          if(emotionToCopyRef.current === emotionRef.current) {
+            setScore((score) => score + 1)
+            setBorderColor("green");
+          } else{
+            setBorderColor("red");
+          }
           takeScreenshot();
-          setEmotionToCopy(getRandomEmotion(lastIdx));
+          setTimeout(() => {
+            setBorderColor("black")
+            setEmotionToCopy(getRandomEmotion(lastIdx));
+          }, 1000)
         }
         if(event.code === 'KeyP') { // press p to pass 
           setEmotionToCopy(getRandomEmotion(lastIdx));
@@ -184,7 +194,7 @@ export default function Home({setImageData}) {
         <div className='video-frame'> {/** Middle PART */}
           <div className='frame'>
             <canvas id='video-canvas'></canvas>
-            <video ref={videoRef} onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} autoPlay muted></video>
+            <video onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} style={{border: `2px solid ${borderColor}`}} ref={videoRef} autoPlay muted></video> 
           </div>
           <div className='emotion'>You are {emotion}</div>
         </div>

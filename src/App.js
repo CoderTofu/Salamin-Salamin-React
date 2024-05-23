@@ -12,7 +12,6 @@ import Over from './pages/Over';
 
 function App() {
   const [imageData, setImageData] = useState([]);
-
   return (
     <>
       <Router>
