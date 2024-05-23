@@ -12,10 +12,14 @@ let statusIcons = {
   neutral: { emoji: '/emojis/6.png', color: '#54adad' }
 }
 let emojis = Object.keys(statusIcons);
-
-const getRandomEmotion = () => {
-  let randint = Math.floor(Math.random() * emojis.length)
-  let emoji = emojis[randint]
+const getRandomEmotion = (lastIdx) => {
+  console.log(lastIdx.current);
+  let randint;
+  do{
+    randint = Math.floor(Math.random() * emojis.length)
+  } while (randint === lastIdx.current);
+  lastIdx.current = randint;
+  let emoji = emojis[randint];
   return emoji;
 }
 
@@ -23,9 +27,10 @@ export default function Home({setImageData}) {
     const [seconds, setSeconds] = useState(30); // Timer
     const [score, setScore] = useState(0); // scoring
     const [isStarted, setIsStarted] = useState(false); // checks if game started
-    const [emotionToCopy, setEmotionToCopy] = useState(getRandomEmotion()); // instruction
+    const lastIdx = useRef(-1);   // ensures no consecutive duplicates
+    const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
-
+    
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
 
@@ -98,7 +103,7 @@ export default function Home({setImageData}) {
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
-    }, [emotionToCopy])
+    }, [])
 
   
     // To detect emotions
@@ -130,10 +135,10 @@ export default function Home({setImageData}) {
           if(!isStarted) setIsStarted(true);
           if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
           takeScreenshot();
-          setEmotionToCopy(getRandomEmotion());
+          setEmotionToCopy(getRandomEmotion(lastIdx));
         }
         if(event.code === 'KeyP') { // press p to pass 
-          setEmotionToCopy(getRandomEmotion());
+          setEmotionToCopy(getRandomEmotion(lastIdx));
         }
     }
 
@@ -152,7 +157,7 @@ export default function Home({setImageData}) {
         setImageData(prevData => [
             ...prevData,
             {
-                emotion: emotionToCopy, // Assuming emotion is defined somewhere
+                emotion: emotionToCopyRef.current, // Assuming emotion is defined somewhere
                 URL: dataURL
             }
         ]);
