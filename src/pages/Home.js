@@ -95,13 +95,12 @@ export default function Home({setImageData}) {
         };
     
         loadModels();
-        setImageData([]);
     }, []);
 
     // FOR KEY PRESSES
     useEffect(() => {
-        document.addEventListener('keydown', handleKey)
-
+        document.addEventListener('keydown', handleKey);
+        setImageData([]);
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
