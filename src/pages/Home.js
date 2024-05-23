@@ -23,9 +23,10 @@ const getRandomEmotion = (lastIdx) => {
 }
 
 export default function Home({setImageData}) {
-    const [seconds, setSeconds] = useState(30); // Timer
+    const time = 15;
+    const [seconds, setSeconds] = useState(time); // Timer
     const [score, setScore] = useState(0); // scoring
-    const [isStarted, setIsStarted] = useState(false); // checks if game started
+    const [hasStarted, setHasStarted] = useState(null); // checks if game started
     const lastIdx = useRef(-1);   // ensures no consecutive duplicates
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
@@ -34,6 +35,7 @@ export default function Home({setImageData}) {
     
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
+    const hasStartedRef = useRef(hasStarted);
 
     useEffect(() => {
       emotionToCopyRef.current = emotionToCopy;
@@ -43,6 +45,9 @@ export default function Home({setImageData}) {
       emotionRef.current = emotion;
     }, [emotion]);
   
+    useEffect(() => {
+      hasStartedRef.current = hasStarted;
+    }, [hasStarted]);
 
     // Video Stuff
     const videoRef = useRef();
@@ -55,7 +60,7 @@ export default function Home({setImageData}) {
 
     // timer
     useEffect(() => {
-      if(!isStarted){
+      if(!hasStarted){
           return;
       }
       if(seconds === -1){
@@ -66,7 +71,7 @@ export default function Home({setImageData}) {
           setSeconds((seconds) => seconds - 1);
           }, 1000);
       }
-    }, [isStarted, seconds]);
+    }, [hasStarted, seconds]);
   
 
     useEffect(() => {
@@ -131,8 +136,8 @@ export default function Home({setImageData}) {
       }, 100);
     }
 
-    const enterBtnHandle = () => {
-      enterHandle();
+    const handleEnterBtn = () => {
+      handleEnter();
       setBtnDisabled(true)
       setTimeout(() => {
         setBorderColor("black")
@@ -141,13 +146,13 @@ export default function Home({setImageData}) {
       }, 1000);
     }
 
-    const passBtnHandle = () => {
-      setIsStarted(true);
+    const handlePassBtn = () => {
+      setHasStarted(true);
       setEmotionToCopy(getRandomEmotion(lastIdx));
     }
 
-    const enterHandle = () => {
-      setIsStarted(true);
+    const handleEnter = () => {
+      setHasStarted(true);
       if(emotionToCopyRef.current === emotionRef.current) {
         setScore((score) => score + 1)
         setBorderColor("green");
@@ -159,7 +164,7 @@ export default function Home({setImageData}) {
 
     const handleKey = (event) => {
         if (event.code === 'Space') {
-          enterHandle();
+          handleEnter();
           document.removeEventListener('keydown', handleKey);
           setTimeout(() => {
             setBorderColor("black")
@@ -168,7 +173,7 @@ export default function Home({setImageData}) {
           }, 1000)
         }
         else if(event.code === 'KeyP') { // press p to pass 
-          passBtnHandle();
+          handlePassBtn();
         }
     }
 
@@ -192,6 +197,20 @@ export default function Home({setImageData}) {
             }
         ]);
     };
+
+    const handlePause = () => {
+      setBtnDisabled(hasStartedRef.current);
+      setHasStarted(!hasStartedRef.current);
+    }
+
+    const handleRestart = () => {
+      setHasStarted(null);
+      hasStartedRef.current = null;
+      setSeconds(time);
+      setEmotionToCopy(getRandomEmotion(lastIdx));
+      setBtnDisabled(false);
+      setImageData([]);
+    }
   
     return (
       <div className="home-app">
@@ -226,15 +245,21 @@ export default function Home({setImageData}) {
           <div className='app-control'>
             <div>
               <h3>Enter</h3>
-              <button onClick={() => enterBtnHandle()} disabled={btnDisabled}>Space</button>
-              <button onClick={() => passBtnHandle()} disabled={btnDisabled}>Pass</button>
+              <button onClick={() => handleEnterBtn()} disabled={btnDisabled}>Space</button>
+              <button onClick={() => handlePassBtn()} disabled={btnDisabled}>Pass</button>
+              {
+                hasStartedRef.current === null ? null: 
+                <>
+                  <button onClick={() => handlePause()}>{hasStartedRef.current ? "Pause" : "Play"}</button>
+                  <button onClick={() => handleRestart()}>Restart</button>
+                </>
+              }              
             </div>
             <div>
                 <Link to={`/over`}>TEST</Link>
             </div>
           </div>
         </div>
-  
       </div>
     );
 }
