@@ -120,8 +120,8 @@ export default function Home({setImageData}) {
         if (event.code === 'Space') {
           if(!isStarted) setIsStarted(true);
           if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
-          setEmotionToCopy(getRandomEmotion());
           takeScreenshot();
+          setEmotionToCopy(getRandomEmotion());
         }
         if(event.code === 'KeyP') { // press p to pass 
           setEmotionToCopy(getRandomEmotion());
@@ -159,7 +159,7 @@ export default function Home({setImageData}) {
           </div>
           <div className='instruction'>
             <h2 className='instruction-header'>Copy this emotion</h2>
-            <h1 className='emotion'>{emotionToCopy}</h1>
+            <h1 className='emotion'>{emotionToCopy.toUpperCase()}</h1>
             <img className='emoji' src={statusIcons[emotionToCopy].emoji} alt="" />
           </div>
           <div className='points'>
