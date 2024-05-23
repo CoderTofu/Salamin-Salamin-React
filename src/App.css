@@ -1,4 +1,4 @@
-.app {
+.home-app {
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -9,15 +9,27 @@
 	background-image: linear-gradient(#67C3F3, #5A98F2);
 }
 
+/* HEADER */
+
 .app-header {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
 }
 
+.instruction {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+
 .emoji {
 	max-width: 50px;
 }
+
+/* MIDDLE */
 
 #video-canvas {
     position: absolute;
@@ -34,4 +46,10 @@
 
 .emotion {
 	text-align: center;
+}
+
+/* BOTTOM */
+.app-footer {
+	display: flex;
+	justify-content: space-between;
 }
