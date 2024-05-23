@@ -193,7 +193,6 @@ export default function Home({setImageData}) {
             }
         ]);
     };
-    
   
     return (
       <div className="home-app">
