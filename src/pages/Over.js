@@ -8,5 +8,6 @@ export default function Over({imageData}) {
 
     return (
         <p>Points: {score}</p>
+
     )
 }
