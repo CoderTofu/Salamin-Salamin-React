@@ -1,20 +1,68 @@
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+
+
+let statusIcons = {
+  angry: { emoji: '/emojis/1.png', color: '#b64518' },
+  disgusted: { emoji: '/emojis/2.png', color: '#1a8d1a' },
+  happy: { emoji: '/emojis/3.png', color: '#148f77' },
+  sad: { emoji: '/emojis/4.png', color: '#767e7e' },
+  surprised: { emoji: '/emojis/5.png', color: '#1230ce' },
+  neutral: { emoji: '/emojis/6.png', color: '#54adad' }
+}
+let emojis = Object.keys(statusIcons);
+
+const getRandomEmotion = () => {
+  let randint = Math.floor(Math.random() * emojis.length)
+  let emoji = emojis[randint]
+  return emoji;
+}
 
 export default function Home({setImageData}) {
     const [seconds, setSeconds] = useState(30); // Timer
-    const [emotion, setEmotion] = useState(''); // instruction
-    const [score, setScore] = useState(''); // scoring
+    const [score, setScore] = useState(0); // scoring
+    const [isStarted, setIsStarted] = useState(false); // checks if game started
+    const [emotionToCopy, setEmotionToCopy] = useState(getRandomEmotion()); // instruction
+    const [emotion, setEmotion] = useState(''); // detected emotion 
 
+    const emotionToCopyRef = useRef(emotionToCopy);
+    const emotionRef = useRef(emotion);
+
+    useEffect(() => {
+      emotionToCopyRef.current = emotionToCopy;
+    }, [emotionToCopy]);
   
+    useEffect(() => {
+      emotionRef.current = emotion;
+    }, [emotion]);
+  
+
     // Video Stuff
     const videoRef = useRef();
     const videoWidth = 915;
     const videoHeight = 540;
     const videoSize = { width: videoWidth, height: videoHeight };
     const videoCanvasRef = useRef(null); // Use useRef for mutable variable
+
+    const navigate = useNavigate();
+
+    // timer
+    useEffect(() => {
+      if(!isStarted){
+          return;
+      }
+      if(seconds === -1){
+          navigate('/over', { state: { score: score } })
+      }
+      else{
+          setTimeout(() => {
+          setSeconds((seconds) => seconds - 1);
+          }, 1000);
+      }
+    }, [isStarted, seconds]);
   
+    
     // useEffect(() => {
     //   setImageData([]);
     // }, [setImageData]);
@@ -58,7 +106,18 @@ export default function Home({setImageData}) {
       faceapi.matchDimensions(videoCanvasRef.current, videoSize);
       setInterval(async () => {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+        if(detections.length === 0){
+          setEmotion("neutral")
+          return;
+        }
+        
         const resizedDetections = faceapi.resizeResults(detections, videoSize);
+        const maxExpression = Object.entries(resizedDetections[0].expressions).reduce((max, [expression, confidence]) => {
+          return confidence > max.confidence ? { expression, confidence } : max;
+        }, { expression: null, confidence: 0 });
+        
+        setEmotion(maxExpression.expression);
+        
         const context = videoCanvasRef.current.getContext('2d');
         context.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
         faceapi.draw.drawDetections(videoCanvasRef.current, resizedDetections);
@@ -67,7 +126,15 @@ export default function Home({setImageData}) {
     }
 
     const handleKey = (event) => {
-        if (event.code === 'Space') takeScreenshot();
+        if (event.code === 'Space') {
+          if(!isStarted) setIsStarted(true);
+          if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
+          takeScreenshot();
+          setEmotionToCopy(getRandomEmotion());
+        }
+        if(event.code === 'KeyP') { // press p to pass 
+          setEmotionToCopy(getRandomEmotion());
+        }
     }
 
     const takeScreenshot = () => {
@@ -101,11 +168,11 @@ export default function Home({setImageData}) {
           </div>
           <div className='instruction'>
             <h2 className='instruction-header'>Copy this emotion</h2>
-            <h1 className='emotion'>PLACEHOLDER{emotion}</h1>
-            <img className='emoji' src="/emojis/1.png" alt="" />
+            <h1 className='emotion'>{emotionToCopy.toUpperCase()}</h1>
+            <img className='emoji' src={statusIcons[emotionToCopy].emoji} alt="" />
           </div>
           <div className='points'>
-            Points: placeholder
+            Points: {score}
           </div>
         </div>
   
@@ -114,7 +181,7 @@ export default function Home({setImageData}) {
             <canvas id='video-canvas'></canvas>
             <video ref={videoRef} onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} autoPlay muted></video>
           </div>
-          <div className='emotion'>You are sad</div>
+          <div className='emotion'>You are {emotion}</div>
         </div>
   
         <div className='app-footer'> {/** Bottom PART */}

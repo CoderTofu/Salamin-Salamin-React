@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useRef, } from 'react';
-import '../css/over.css'
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function Over({imageData}) {
-
-    console.log(imageData)
+    console.log(imageData);
+    let location = useLocation();
+    const score = location.state === null ? 0 : location.state.score
 
     return (
-        <div className='image-container'>
-            {imageData.map((element, index) => {
-                return (
-                    <img key={index} src={element.URL} alt={element.emoji} />
-                )
-            })}
-        </div>
+        <p>Points: {score}</p>
+
     )
 }
