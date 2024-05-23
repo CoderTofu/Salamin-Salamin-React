@@ -1,4 +1,4 @@
-import './css/app.css';
+import './css/App.css';
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,7 +12,6 @@ import Over from './pages/Over';
 
 function App() {
   const [imageData, setImageData] = useState([]);
-
   return (
     <>
       <Router>

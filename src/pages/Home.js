@@ -1,3 +1,4 @@
+import { isDisabled } from '@testing-library/user-event/dist/utils';
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -12,10 +13,13 @@ let statusIcons = {
   neutral: { emoji: '/emojis/6.png', color: '#54adad' }
 }
 let emojis = Object.keys(statusIcons);
-
-const getRandomEmotion = () => {
-  let randint = Math.floor(Math.random() * emojis.length)
-  let emoji = emojis[randint]
+const getRandomEmotion = (lastIdx) => {
+  let randint;
+  do{
+    randint = Math.floor(Math.random() * emojis.length)
+  } while (randint === lastIdx.current);
+  lastIdx.current = randint;
+  let emoji = emojis[randint];
   return emoji;
 }
 
@@ -23,9 +27,12 @@ export default function Home({setImageData}) {
     const [seconds, setSeconds] = useState(30); // Timer
     const [score, setScore] = useState(0); // scoring
     const [isStarted, setIsStarted] = useState(false); // checks if game started
-    const [emotionToCopy, setEmotionToCopy] = useState(getRandomEmotion()); // instruction
+    const lastIdx = useRef(-1);   // ensures no consecutive duplicates
+    const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
-
+    const [borderColor, setBorderColor] = useState('black'); // video border
+    const [btnDisabled, setBtnDisabled] = useState(false);
+    
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
 
@@ -98,7 +105,7 @@ export default function Home({setImageData}) {
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
-    }, [emotionToCopy])
+    }, [])
 
   
     // To detect emotions
@@ -108,6 +115,7 @@ export default function Home({setImageData}) {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
         if(detections.length === 0){
           setEmotion("neutral")
+          setBorderColor(null)
           return;
         }
         
@@ -125,15 +133,47 @@ export default function Home({setImageData}) {
       }, 100);
     }
 
+    const enterBtnHandle = () => {
+      setIsStarted(true);
+      if(emotionToCopyRef.current === emotionRef.current) {
+        setScore((score) => score + 1)
+        setBorderColor("green");
+      } else{
+        setBorderColor("red");
+      }
+      takeScreenshot();
+      setBtnDisabled(true)
+      setTimeout(() => {
+        setBorderColor("black")
+        setEmotionToCopy(getRandomEmotion(lastIdx));
+        setBtnDisabled(false);
+      }, 1000);
+    }
+
+    const passBtnHandle = () => {
+      setIsStarted(true);
+      setEmotionToCopy(getRandomEmotion(lastIdx));
+    }
+
     const handleKey = (event) => {
         if (event.code === 'Space') {
-          if(!isStarted) setIsStarted(true);
-          if(emotionToCopyRef.current === emotionRef.current) setScore((score) => score + 1)
+          setIsStarted(true);
+          if(emotionToCopyRef.current === emotionRef.current) {
+            setScore((score) => score + 1)
+            setBorderColor("green");
+          } else{
+            setBorderColor("red");
+          }
+          document.removeEventListener('keydown', handleKey);
           takeScreenshot();
-          setEmotionToCopy(getRandomEmotion());
+          setTimeout(() => {
+            setBorderColor("black")
+            setEmotionToCopy(getRandomEmotion(lastIdx));
+            document.addEventListener('keydown', handleKey);
+          }, 1000)
         }
-        if(event.code === 'KeyP') { // press p to pass 
-          setEmotionToCopy(getRandomEmotion());
+        else if(event.code === 'KeyP') { // press p to pass 
+          passBtnHandle();
         }
     }
 
@@ -152,7 +192,7 @@ export default function Home({setImageData}) {
         setImageData(prevData => [
             ...prevData,
             {
-                emotion: emotionToCopy, // Assuming emotion is defined somewhere
+                emotion: emotionToCopyRef.current, // Assuming emotion is defined somewhere
                 URL: dataURL
             }
         ]);
@@ -179,7 +219,7 @@ export default function Home({setImageData}) {
         <div className='video-frame'> {/** Middle PART */}
           <div className='frame'>
             <canvas id='video-canvas'></canvas>
-            <video ref={videoRef} onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} autoPlay muted></video>
+            <video onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} style={{border: `2px solid ${borderColor}`}} ref={videoRef} autoPlay muted></video> 
           </div>
           <div className='emotion'>You are {emotion}</div>
         </div>
@@ -191,8 +231,9 @@ export default function Home({setImageData}) {
           </div>
           <div className='app-control'>
             <div>
-              <h3>Start</h3>
-              <button>Space</button>
+              <h3>Enter</h3>
+              <button onClick={() => enterBtnHandle()} disabled={btnDisabled}>Space</button>
+              <button onClick={() => passBtnHandle()} disabled={btnDisabled}>Pass</button>
             </div>
             <div>
                 <Link to={`/over`}>TEST</Link>
