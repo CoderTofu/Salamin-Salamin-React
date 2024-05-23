@@ -15,34 +15,43 @@ export default function Home({setImageData}) {
     const videoSize = { width: videoWidth, height: videoHeight };
     const videoCanvasRef = useRef(null); // Use useRef for mutable variable
   
+    // useEffect(() => {
+    //   setImageData([]);
+    // }, [setImageData]);
+
     useEffect(() => {
         document.addEventListener('keydown', handleKey)
 
-      // Assign the canvas element to the videoCanvasRef
-      videoCanvasRef.current = document.getElementById('video-canvas');
-  
-      // Load face-api.js models
-      const loadModels = () => {
-        Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-          faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-          faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-          faceapi.nets.faceExpressionNet.loadFromUri('/models')
-        ]).then(startVideo);
-      };
-  
-      // Start video streaming
-      const startVideo = () => {
-        navigator.mediaDevices
-          .getUserMedia({ video: {} })
-          .then((stream) => {
-            videoRef.current.srcObject = stream;
-          })
-          .catch((err) => console.error('Error accessing webcam:', err));
-      };
-  
-      loadModels();
+        // Assign the canvas element to the videoCanvasRef
+        videoCanvasRef.current = document.getElementById('video-canvas');
+    
+        // Load face-api.js models
+        const loadModels = () => {
+            Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+            faceapi.nets.faceExpressionNet.loadFromUri('/models')
+            ]).then(startVideo);
+        };
+    
+        // Start video streaming
+        const startVideo = () => {
+            navigator.mediaDevices
+            .getUserMedia({ video: {} })
+            .then((stream) => {
+                videoRef.current.srcObject = stream;
+            })
+            .catch((err) => console.error('Error accessing webcam:', err));
+        };
+    
+        loadModels();
+        setImageData([]);
+        return () => {
+            document.removeEventListener("keydown", handleKey);
+        }
     }, []);
+
   
     // To detect emotions
     const handlePlay = (video) => {
@@ -80,6 +89,7 @@ export default function Home({setImageData}) {
                 URL: dataURL
             }
         ]);
+        alert("TAKEN")
     };
     
   
