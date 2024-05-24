@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, } from 'react';
+import React, { useEffect } from 'react';
 import '../css/over.css'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 
 
@@ -36,10 +36,6 @@ export default function Over({imageData}) {
     useEffect(() => {
         document.addEventListener('keydown', handleKey);
         
-        imageData.map(element => {
-            console.log(element.emotion)
-            return null
-        })
         return () => {
             document.removeEventListener("keydown", handleKey);
         }

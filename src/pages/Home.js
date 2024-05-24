@@ -142,9 +142,9 @@ export default function Home({setImageData}) {
     const handleEnterBtn = () => {
       handleEnter();
       setBtnDisabled(true)
+      setEmotionToCopy(getRandomEmotion(lastIdx));
       setTimeout(() => {
         setBorderColor("black")
-        setEmotionToCopy(getRandomEmotion(lastIdx));
         setBtnDisabled(false);
       }, 1000);
     }
@@ -168,11 +168,9 @@ export default function Home({setImageData}) {
     const handleKey = (event) => {
         if (event.code === 'Space') {
           handleEnter();
-          document.removeEventListener('keydown', handleKey);
+          setEmotionToCopy(getRandomEmotion(lastIdx));
           setTimeout(() => {
             setBorderColor("black")
-            setEmotionToCopy(getRandomEmotion(lastIdx));
-            document.addEventListener('keydown', handleKey);
           }, 1000)
         }
         else if(event.code === 'Digit0' || event.code === 'Numpad0') {
@@ -192,7 +190,6 @@ export default function Home({setImageData}) {
         const dataURL = imgCanvas.toDataURL('image/jpeg');
     
         // Assuming setImgData is a state setter function for an array state
-        console.log(emotionToCopyRef.current);
         setImageData(prevData => [
             {
                 emotion: emotionToCopyRef.current, // Assuming emotion is defined somewhere
