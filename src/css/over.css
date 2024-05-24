@@ -25,7 +25,7 @@
 .images-container {
     position: absolute;
     width: 100%;
-    bottom: 40px;
+    top: 210px;
     display: flex;
     justify-content: center;
     align-items: center;
