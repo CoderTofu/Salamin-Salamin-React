@@ -108,7 +108,6 @@ export default function Home({setImageData}) {
     useEffect(() => {
         document.addEventListener('keydown', handleKey);
         setImageData([]);
-        console.log("CLEAR")
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
