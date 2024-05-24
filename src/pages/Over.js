@@ -11,10 +11,9 @@ export default function Over({imageData}) {
         <div className='over-body'>
             <div className='over-header'>
                 <div className='button-container'>
-                    <Link to={"/"}><button>X</button></Link>
                 </div>
                 <div className='name-container'>
-                    <h1>Salamin-Salamin</h1>
+                    <img src="/images/salamin_logo.png" alt="" />
                 </div>
                 <div className='score-container'>
                     <p>Points: {score}</p>
