@@ -1,25 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+.highlight {
+    font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    color: #FAAE2C;
+    -webkit-text-stroke: 2px #124FAF;
+    letter-spacing: 1px;
+}
+
+.overlay {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+}
+
 .over-body {
     display: block;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-image: url('../../public/images/collage_bg.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.over-header {
-    margin: 0px 50px 0px 50px;
-    display: flex;
-}
-
-.over-header > * {
-    flex-grow: 1;
 }
 
 .images-container {
+    position: absolute;
+    width: 100%;
+    bottom: 40px;
     display: flex;
-    height: 100%;
     justify-content: center;
     align-items: center;
 }
@@ -29,37 +36,53 @@
     left: 50%;
     transform: translateX(-50%);
     top: -10px;
+    z-index: 20;
 }
 
 .name-container img{
-    height: 300px;
+    height: 240px;
     width: auto;
 }
 
 .score-container {
+    position: absolute;
+    right: 10%;
+    top: 60px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: right;
+}
+
+.score-container img {
+    height: 60px;
+}
+
+.score-container p {
+    font-size: 60px;
+    margin-left: 20px;
 }
 
 .image {
+    z-index: 1;
     background-color: #fff;
+    border-radius: 10px;
     padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0 4px 8px 0 #00000033, 0 6px 20px 0 #00000030;
 }
 
 .image p {
-    margin-top: 5px;
-    text-transform: capitalize;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 40px;
 }
 
 .image-grids {
     display: grid;
-    width: 100%;
-    padding: 50px;
-    grid-template-columns: repeat(auto-fill, minmax(min(30%, 500px), 1fr));
+    width: 78%;
+    grid-template-columns: repeat(auto-fill, minmax(min(30%, 450px), 1fr));
     gap: 16px; /* Adjust the gap between images as needed */
 }
 
@@ -68,3 +91,5 @@
     height: auto;
     object-fit: cover;
 }
+
+

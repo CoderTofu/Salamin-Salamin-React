@@ -9,6 +9,7 @@ export default function Over({imageData}) {
 
     return (
         <div className='over-body'>
+            <img className='overlay' src="/images/home-bg-overlay.png" alt="" />
             <div className='over-header'>
                 <div className='button-container'>
                 </div>
@@ -16,7 +17,8 @@ export default function Over({imageData}) {
                     <img src="/images/salamin_logo.png" alt="" />
                 </div>
                 <div className='score-container'>
-                    <p>Points: {score}</p>
+                    <img src="/images/your_points.png" alt="" />
+                    <p className='highlight'>{score}</p>
                 </div>
             </div>
             <div className='images-container'>
@@ -25,7 +27,7 @@ export default function Over({imageData}) {
                         return (
                             <div className="image" key={index}>
                                 <img src={element.URL} alt={element.emotion} />
-                                <p>{element.emotion}</p>
+                                <p className='highlight'>{element.emotion}</p>
                             </div>
                         )
                     })}
