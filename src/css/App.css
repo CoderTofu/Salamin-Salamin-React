@@ -1,12 +1,11 @@
 .home-app {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100vh;
-	justify-content: center;
-	align-items: center;
-	overflow: hidden;
-	background-image: linear-gradient(#67C3F3, #5A98F2);
+    background-image: url('/public/images/home-play-screen-bg.png');
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
 }
 
 /* HEADER */

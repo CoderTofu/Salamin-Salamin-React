@@ -1,0 +1,57 @@
+/* Landing.css */
+.landing-container {
+    position: relative;
+    background-image: url('/public/images/landing-bg.png');
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    /*align-items: center;*/
+  }
+  
+  .content-wrapper {
+    text-align: center;
+  }
+
+  .landing-overlay {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1;
+  }
+  
+  
+  .center-logo {
+    width: 590px;
+    height: 590px;
+    padding-top: 80px;
+    padding-bottom: 20px;
+  }
+  
+  .play-button{
+    width: 310px;
+    height: 70px;
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #ffffff;
+    color: #2d7feb;
+    border: 4px solid rgb(73, 132, 208);
+    border-radius: 25px;
+    cursor: pointer;
+  }
+
+  .play-button > a {
+    text-decoration: none;
+  }
+  
+  .play-button:hover {
+    background-color: #ace6ff;
+    border: 4px solid rgb(61, 121, 200);
+  }
+  
