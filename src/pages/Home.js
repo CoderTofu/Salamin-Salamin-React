@@ -1,6 +1,7 @@
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Popup from '../components/Popup';
 
 
 let statusIcons = {
@@ -11,7 +12,7 @@ let statusIcons = {
   surprised: { emoji: '/emojis/5.png', color: '#1230ce' },
   neutral: { emoji: '/emojis/6.png', color: '#54adad' }
 }
-let emojis = Object.keys(statusIcons);
+const emojis = Object.keys(statusIcons);
 const getRandomEmotion = (lastIdx) => {
   let randint;
   do{
@@ -26,15 +27,17 @@ export default function Home({setImageData}) {
     const time = 15;
     const [seconds, setSeconds] = useState(time); // Timer
     const [score, setScore] = useState(0); // scoring
-    const [hasStarted, setHasStarted] = useState(null); // checks if game started
+    const [hasStarted, setHasStarted] = useState(false); // checks if game started
     const lastIdx = useRef(-1);   // ensures no consecutive duplicates
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
     const [borderColor, setBorderColor] = useState('black'); // video border
     const [btnDisabled, setBtnDisabled] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
+
     const hasStartedRef = useRef(hasStarted);
 
     useEffect(() => {
@@ -44,7 +47,7 @@ export default function Home({setImageData}) {
     useEffect(() => {
       emotionRef.current = emotion;
     }, [emotion]);
-  
+
     useEffect(() => {
       hasStartedRef.current = hasStarted;
     }, [hasStarted]);
@@ -172,7 +175,7 @@ export default function Home({setImageData}) {
             document.addEventListener('keydown', handleKey);
           }, 1000)
         }
-        else if(event.code === 'KeyP') { // press p to pass 
+        else if(event.code === 'Digit0' || event.code === 'Numpad0') {
           handlePassBtn();
         }
     }
@@ -198,23 +201,27 @@ export default function Home({setImageData}) {
         ]);
     };
 
-    const handlePause = () => {
-      setBtnDisabled(hasStartedRef.current);
-      setHasStarted(!hasStartedRef.current);
-    }
-
     const handleRestart = () => {
-      setHasStarted(null);
-      hasStartedRef.current = null;
+      setHasStarted(false);
       setSeconds(time);
       setEmotionToCopy(getRandomEmotion(lastIdx));
       setBtnDisabled(false);
       setImageData([]);
+      setIsPaused(false);
     }
-  
+    
+    const handleResume = () => {
+      setHasStarted(true);
+      setIsPaused(false);
+    }
+
+    const handlePause = () => {
+      setHasStarted(false);
+      setIsPaused(true);
+    } 
+    
     return (
       <div className="home-app">
-  
         <div className='app-header'> 
           <div className='timer'>
             {seconds} 
@@ -236,7 +243,11 @@ export default function Home({setImageData}) {
           </div>
           <div className='emotion'>You are {emotion}</div>
         </div>
-  
+        <Popup trigger={isPaused} handleExit={handleResume}>
+          <h3>Paused</h3>
+          <button onClick={() => handleResume()}>Resume</button>
+          <button onClick={() => handleRestart()}>Restart</button>
+        </Popup>
         <div className='app-footer'> {/** Bottom PART */}
           <div className='app-name'>
             <h1>Salamin</h1>
@@ -248,12 +259,9 @@ export default function Home({setImageData}) {
               <button onClick={() => handleEnterBtn()} disabled={btnDisabled}>Space</button>
               <button onClick={() => handlePassBtn()} disabled={btnDisabled}>Pass</button>
               {
-                hasStartedRef.current === null ? null: 
-                <>
-                  <button onClick={() => handlePause()}>{hasStartedRef.current ? "Pause" : "Play"}</button>
-                  <button onClick={() => handleRestart()}>Restart</button>
-                </>
-              }              
+                hasStartedRef.current ? 
+                <button onClick={() => handlePause()}>Pause</button>       
+              : null}
             </div>
             <div>
                 <Link to={`/over`}>TEST</Link>
