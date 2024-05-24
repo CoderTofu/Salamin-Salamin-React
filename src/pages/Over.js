@@ -35,6 +35,11 @@ export default function Over({imageData}) {
 
     useEffect(() => {
         document.addEventListener('keydown', handleKey);
+        
+        imageData.map(element => {
+            console.log(element.emotion)
+            return null
+        })
         return () => {
             document.removeEventListener("keydown", handleKey);
         }
@@ -56,13 +61,17 @@ export default function Over({imageData}) {
             </div>
             <div className='images-container'>
                 <div className='image-grids'>
-                    {imageData.slice(-6).map((element, index) => {
-                        return (
-                            <div className="image" key={index}>
-                                <img src={element.URL} alt={element.emotion} />
-                                <p className='highlight'>{element.emotion}</p>
-                            </div>
-                        )
+                    {imageData.map((element, index) => {
+                        if (index <= 5) {
+                            return (
+                                <div className="image" key={index}>
+                                    <img src={element.URL} alt={element.emotion} />
+                                    <p className='highlight'>{element.emotion}</p>
+                                </div>
+                            )
+                        } else {
+                            return null
+                        }
                     })}
                 </div>
             </div>

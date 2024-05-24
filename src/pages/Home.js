@@ -192,12 +192,13 @@ export default function Home({setImageData}) {
         const dataURL = imgCanvas.toDataURL('image/jpeg');
     
         // Assuming setImgData is a state setter function for an array state
+        console.log(emotionToCopyRef.current);
         setImageData(prevData => [
-            ...prevData,
             {
                 emotion: emotionToCopyRef.current, // Assuming emotion is defined somewhere
                 URL: dataURL
-            }
+            },
+            ...prevData
         ]);
     };
 
