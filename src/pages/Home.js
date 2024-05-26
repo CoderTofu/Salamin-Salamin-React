@@ -80,7 +80,7 @@ export default function Home({setImageData}) {
       }
     
       return () => clearInterval(timer);
-    }, [hasStarted, seconds, isPaused, score, navigate]);
+    }, [hasStarted, seconds, isPaused]);
   
 
     useEffect(() => {
