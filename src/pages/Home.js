@@ -217,18 +217,21 @@ export default function Home({setImageData}) {
     }
     
     return (
-      <div className="home-app">
+      <div className={`home-app ${emotion}`}>
+        <div className='design-grid'></div>
+        <div className='design-underlay'></div>
+        
         <div className='app-header'> 
           <div className='timer'>
             {seconds} 
           </div>
           <div className='instruction'>
-            <img className='instruction-header' src='/images/mirror-this.png'/>
+            <img className='instruction-header' src='/images/mirror-this.png' alt='instruction'/>
             <h2 className='emotion'>{emotionToCopy.toUpperCase()}</h2>
             <img className='emoji' src={statusIcons[emotionToCopy].emoji} alt="" />
           </div>
           <div className='points'>
-            <img src='/images/points.png' />
+            <img src='/images/points.png' alt='points'/>
             {score}
           </div>
         </div>

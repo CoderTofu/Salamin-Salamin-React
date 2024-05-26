@@ -13,20 +13,19 @@
     width: 100vw;
 }
 
-.over-body {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+#emoji-overlay {
+    top: 5px;
+    z-index: 100;
 }
 
-.images-container {
-    position: absolute;
-    width: 100%;
-    top: 210px;
+.over-body {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+	background-image: linear-gradient(#b1d7ff, #41aeff);
 }
 
 .name-container {
@@ -60,9 +59,28 @@
     margin-left: 20px;
 }
 
-.image {
+/* FOR GRID */
+
+.images-container {
+    margin-top: 120px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-grid {
+    justify-content: center;
+    width: 100%;
+    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20vw, 380px));
+}
+
+.image-div {
     z-index: 1;
     background-color: #fff;
+    width: 350px;
     border-radius: 10px;
     padding: 15px;
     display: flex;
@@ -71,23 +89,20 @@
     box-shadow: 0 4px 8px 0 #00000033, 0 6px 20px 0 #00000030;
 }
 
-.image p {
+.image-div p {
     text-transform: uppercase;
     font-weight: bold;
     font-size: 40px;
 }
 
-.image-grids {
-    display: grid;
-    width: 78%;
-    grid-template-columns: repeat(auto-fill, minmax(min(30%, 450px), 1fr));
-    gap: 16px; /* Adjust the gap between images as needed */
-}
-
-.image-grids img {
+.image-grid img {
+    aspect-ratio: 16 / 11;
     width: 100%;
     height: auto;
     object-fit: cover;
+    object-position: center;
 }
+
+
 
 

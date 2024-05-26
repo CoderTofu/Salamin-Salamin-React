@@ -44,7 +44,8 @@ export default function Over({imageData}) {
 
     return (
         <div className='over-body'>
-            <img className='overlay' src="/images/home-bg-overlay.png" alt="" />
+            <img className='overlay' src="/images/over-bg-underlay-1.png" alt="" />
+            <img className='overlay' id='emoji-overlay' src="/images/over-bg-underlay-2.png" alt="" />
             <div className='over-header'>
                 <div className='button-container'>
                 </div>
@@ -57,11 +58,11 @@ export default function Over({imageData}) {
                 </div>
             </div>
             <div className='images-container'>
-                <div className='image-grids'>
+                <div className='image-grid'>
                     {imageData.map((element, index) => {
                         if (index <= 5) {
                             return (
-                                <div className="image" key={index}>
+                                <div className="image-div" key={index}>
                                     <img src={element.URL} alt={element.emotion} />
                                     <p className='highlight'>{element.emotion}</p>
                                 </div>
