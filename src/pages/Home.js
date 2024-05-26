@@ -138,7 +138,6 @@ export default function Home({setImageData}) {
           const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
           if (detections.length === 0) {
             setEmotionDebounced('neutral');
-            setBorderColor('white');
             return;
           }
       
