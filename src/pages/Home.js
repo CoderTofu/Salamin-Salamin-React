@@ -250,7 +250,7 @@ export default function Home({setImageData}) {
             <canvas id='video-canvas'></canvas>
             <video onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} style={{border: `15px solid ${borderColor}`}} ref={videoRef} autoPlay muted></video> 
           </div>
-          <div className='emotion'>YOUR EMOTION: {emotion.toUpperCase()}</div>
+          <div className='emotion'>YOU: {emotion.toUpperCase()}</div>
         </div>
         {
           isPaused ?
