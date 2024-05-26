@@ -57,8 +57,8 @@ export default function Home({setImageData}) {
 
     // Video Stuff
     const videoRef = useRef();
-    const videoWidth = 915;
-    const videoHeight = 540;
+    const videoWidth = 668.8;
+    const videoHeight = 534.4;
     const videoSize = { width: videoWidth, height: videoHeight };
     const videoCanvasRef = useRef(null); // Use useRef for mutable variable
 
