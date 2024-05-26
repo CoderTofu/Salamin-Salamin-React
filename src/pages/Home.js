@@ -31,7 +31,6 @@ export default function Home({setImageData}) {
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
     const [borderColor, setBorderColor] = useState('white'); // video border
-    const [btnDisabled, setBtnDisabled] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     
     const emotionToCopyRef = useRef(emotionToCopy);
@@ -67,7 +66,7 @@ export default function Home({setImageData}) {
 
     // timer
     useEffect(() => {
-      if(!hasStarted){
+      if(!hasStarted || isPaused){
           return;
       }
       if(seconds < 0){
@@ -78,7 +77,7 @@ export default function Home({setImageData}) {
           setSeconds((seconds) => seconds - 1);
           }, 1000);
       }
-    }, [hasStarted, seconds]);
+    }, [hasStarted, seconds, isPaused]);
   
 
     useEffect(() => {
@@ -171,13 +170,13 @@ export default function Home({setImageData}) {
         else if(event.code === 'Digit0' || event.code === 'Numpad0') {
           handlePassBtn();
         }
-        else if(event.code === 'Delete' && hasStartedRef.current){
-          handlePause();
+        else if(event.code === 'Delete'){
+          setIsPaused(true);
         }
       }
       else{
         if(event.code === 'Digit1' || event.code === 'Numpad1' || event.code === 'Delete') {
-          handleResume();
+          setIsPaused(false);
         }
         else if(event.code === 'Digit2' || event.code === 'Numpad2') {
           handleRestart();
@@ -211,22 +210,11 @@ export default function Home({setImageData}) {
 
     const handleRestart = () => {
       setHasStarted(false);
-      setSeconds(time);
+      setIsPaused(false);
+      setTimeout(() => setSeconds(time), 100); // prevent decrement from last game
       setEmotionToCopy(getRandomEmotion(lastIdx));
-      setBtnDisabled(false);
       setImageData([]);
-      setIsPaused(false);
     }
-    
-    const handleResume = () => {
-      setHasStarted(true);
-      setIsPaused(false);
-    }
-
-    const handlePause = () => {
-      setHasStarted(false);
-      setIsPaused(true);
-    } 
     
     return (
       <div className="home-app">
