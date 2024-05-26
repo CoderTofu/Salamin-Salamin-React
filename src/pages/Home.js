@@ -126,7 +126,6 @@ export default function Home({setImageData}) {
 
     const setEmotionDebounced = (newEmotion) => {
       if (newEmotion !== emotionRef.current) {
-        setEmotion(newEmotion);
         emotionRef.current = newEmotion;
       }
     };
@@ -146,8 +145,9 @@ export default function Home({setImageData}) {
             return confidence > max.confidence ? { expression, confidence } : max;
           }, { expression: null, confidence: 0 });
         
-          setEmotionDebounced(maxExpression.expression);
-        
+          setEmotion(maxExpression.expression);
+          emotionRef.current = maxExpression.expression;
+
           const context = videoCanvasRef.current.getContext('2d');
           context.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
           faceapi.draw.drawDetections(videoCanvasRef.current, resizedDetections);
