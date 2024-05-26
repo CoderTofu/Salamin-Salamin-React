@@ -16,6 +16,8 @@ body {
   background-repeat: no-repeat;
   min-height: 100vh;
   min-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 code {
