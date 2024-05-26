@@ -33,6 +33,7 @@ export default function Home({setImageData}) {
     const [borderColor, setBorderColor] = useState('white'); // video border
     const [isPaused, setIsPaused] = useState(false);
     
+    const lastDetected = useRef('neutral');
     const emotionToCopyRef = useRef(emotionToCopy);
     const emotionRef = useRef(emotion);
 
@@ -126,6 +127,7 @@ export default function Home({setImageData}) {
 
     const setEmotionDebounced = (newEmotion) => {
       if (newEmotion !== emotionRef.current) {
+        setEmotion(newEmotion);
         emotionRef.current = newEmotion;
       }
     };
@@ -136,7 +138,7 @@ export default function Home({setImageData}) {
       const detectFace = async () => {
           const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
           if (detections.length === 0) {
-            setEmotionDebounced('neutral');
+            setEmotionDebounced(lastDetected.current);
             return;
           }
       
@@ -145,8 +147,8 @@ export default function Home({setImageData}) {
             return confidence > max.confidence ? { expression, confidence } : max;
           }, { expression: null, confidence: 0 });
         
-          setEmotion(maxExpression.expression);
-          emotionRef.current = maxExpression.expression;
+          setEmotionDebounced(maxExpression.expression);
+          lastDetected.current = maxExpression.expression;
 
           const context = videoCanvasRef.current.getContext('2d');
           context.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
