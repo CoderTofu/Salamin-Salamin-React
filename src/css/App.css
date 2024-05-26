@@ -14,6 +14,7 @@
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
+	padding-top: 5vh;
 }
 
 .instruction {
@@ -21,11 +22,49 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	padding-left: 20vw;
 }
 
+.instruction-header{
+	width: 50%;
+}
+
+.emotion {
+	text-align: center;
+	padding-top: 1vh;
+	font-family: "Freeman", sans-serif;
+	font-size: 35px;
+	color: white;
+	font-weight: 700;
+    -webkit-text-stroke: 2px #124FAF;
+}
+
+.timer {
+	padding-left: 8vw;
+	font-family: "Freeman", sans-serif;
+	font-weight: 700;
+	color: white;
+	font-size: 100px;
+	-webkit-text-stroke: 3px #124FAF;
+}
+
+.points {
+	font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+	text-align: right;
+	padding-right: 6vw;
+    color: #FAAE2C;
+    -webkit-text-stroke: 3px #124FAF;
+	font-size: 50px;
+}
+.points img {
+	width: 30%;
+}
 
 .emoji {
-	max-width: 50px;
+	padding-top: 1vh;
+	max-width: 65px;
 }
 
 /* MIDDLE */
@@ -35,17 +74,21 @@
     top: 0;
 }
 
+#video {
+	width: 100%;
+  	height: 100%;
+}
+
 .video-frame {
 	position: relative;
 	display: grid;
 	align-items: center;
 	justify-content: center;
 	max-width: 100%;
+	margin-top: 3vh;
+	margin-right: 5vh;
 }
 
-.emotion {
-	text-align: center;
-}
 
 /* BOTTOM */
 .app-footer {
@@ -61,16 +104,17 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.2);
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	background-size: cover;
+	background-image: url('/public/images/paused.png');
+	
 }
 
-.popup-inner {
-	position: relative;
-	padding: 32px;
-	width: 100%;
-	max-width: 640px;
-	background-color: white;
+
+.wrapper {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+  	gap: 10px;
+  	grid-auto-rows: minmax(100px, auto);
+	text-align: center;
 }
+
