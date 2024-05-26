@@ -229,6 +229,7 @@ export default function Home({setImageData}) {
       setIsPaused(false);
       setSeconds(time);
       setEmotionToCopy(getRandomEmotion(lastIdx));
+      setScore(0);
       setImageData([]);
     }
     
