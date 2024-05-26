@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 
 let statusIcons = {
-  angry: { emoji: '/emojis/angry.png', color: '#b64518' },
-  disgusted: { emoji: '/emojis/disgusted.png', color: '#1a8d1a' },
-  happy: { emoji: '/emojis/happy.png', color: '#148f77' },
-  sad: { emoji: '/emojis/sad.png', color: '#767e7e' },
-  surprised: { emoji: '/emojis/surprised.png', color: '#1230ce' },
-  neutral: { emoji: '/emojis/neutral.png', color: '#54adad' }
+  angry: { emoji: '/emojis/angry.png' },
+  disgusted: { emoji: '/emojis/disgusted.png' },
+  happy: { emoji: '/emojis/happy.png' },
+  sad: { emoji: '/emojis/sad.png' },
+  surprised: { emoji: '/emojis/surprised.png' },
+  neutral: { emoji: '/emojis/neutral.png' }
 }
 const emojis = Object.keys(statusIcons);
 const getRandomEmotion = (lastIdx) => {
@@ -74,12 +74,12 @@ export default function Home({setImageData}) {
       }
     
       if (seconds < 0) {
-        navigate('/over', { state: { score } });
         clearInterval(timer);
+        navigate('/over', { state: { score } });
       }
     
       return () => clearInterval(timer);
-    }, [hasStarted, seconds, isPaused]);
+    }, [hasStarted, seconds, isPaused, score, navigate]);
   
 
     useEffect(() => {
@@ -107,6 +107,12 @@ export default function Home({setImageData}) {
         };
     
         loadModels();
+        return () => {
+          // Cleanup video stream
+          if (videoRef.current && videoRef.current.srcObject) {
+            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+          }
+        };
     }, []);
 
     // FOR KEY PRESSES
@@ -172,10 +178,10 @@ export default function Home({setImageData}) {
       if(!isPausedRef.current){
         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
           handleEnter();
-          setEmotionToCopy(getRandomEmotion(lastIdx));
           const timeout = setTimeout(() => {
             setBorderColor("white");
-          }, 800)
+          }, 800);
+          setEmotionToCopy(getRandomEmotion(lastIdx));
           return () => clearTimeout(timeout);
         }
         else if(event.code === 'Digit0' || event.code === 'Numpad0') {
