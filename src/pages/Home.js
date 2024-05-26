@@ -66,17 +66,19 @@ export default function Home({setImageData}) {
 
     // timer
     useEffect(() => {
-      if(!hasStarted || isPaused){
-          return;
+      let timer;
+      if (hasStarted && !isPaused) {
+        timer = setInterval(() => {
+          setSeconds(prev => prev - 1);
+        }, 1000);
       }
-      if(seconds < 0){
-          navigate('/over', { state: { score: score } })
+    
+      if (seconds < 0) {
+        navigate('/over', { state: { score } });
+        clearInterval(timer);
       }
-      else{
-          setTimeout(() => {
-          setSeconds((seconds) => seconds - 1);
-          }, 1000);
-      }
+    
+      return () => clearInterval(timer);
     }, [hasStarted, seconds, isPaused]);
   
 
@@ -116,46 +118,54 @@ export default function Home({setImageData}) {
         }
     }, [])
 
+    const setEmotionDebounced = (newEmotion) => {
+      if (newEmotion !== emotionRef.current) {
+        setEmotion(newEmotion);
+        emotionRef.current = newEmotion;
+      }
+    };
   
     // To detect emotions
     const handlePlay = (video) => {
       faceapi.matchDimensions(videoCanvasRef.current, videoSize);
-      setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
-        if(detections.length === 0){
-          setEmotion("neutral")
-          setBorderColor(null)
-          return;
-        }
+      const detectFace = async () => {
+          const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+          if (detections.length === 0) {
+            setEmotionDebounced('neutral');
+            setBorderColor('white');
+            return;
+          }
+      
+          const resizedDetections = faceapi.resizeResults(detections, videoSize);
+          const maxExpression = Object.entries(resizedDetections[0].expressions).reduce((max, [expression, confidence]) => {
+            return confidence > max.confidence ? { expression, confidence } : max;
+          }, { expression: null, confidence: 0 });
         
-        const resizedDetections = faceapi.resizeResults(detections, videoSize);
-        const maxExpression = Object.entries(resizedDetections[0].expressions).reduce((max, [expression, confidence]) => {
-          return confidence > max.confidence ? { expression, confidence } : max;
-        }, { expression: null, confidence: 0 });
+          setEmotionDebounced(maxExpression.expression);
         
-        setEmotion(maxExpression.expression);
-        
-        const context = videoCanvasRef.current.getContext('2d');
-        context.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
-        faceapi.draw.drawDetections(videoCanvasRef.current, resizedDetections);
-        faceapi.draw.drawFaceExpressions(videoCanvasRef.current, resizedDetections);
-      }, 100);
-    }
+          const context = videoCanvasRef.current.getContext('2d');
+          context.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
+          faceapi.draw.drawDetections(videoCanvasRef.current, resizedDetections);
+          faceapi.draw.drawFaceExpressions(videoCanvasRef.current, resizedDetections);
+      };
+        const interval = setInterval(detectFace, 100);
+        return () => clearInterval(interval);
+    };
 
     const handlePassBtn = () => {
-      setHasStarted(true);
+      if(!hasStartedRef.current) setHasStarted(true);
       setEmotionToCopy(getRandomEmotion(lastIdx));
     }
 
     const handleEnter = () => {
-      setHasStarted(true);
-      takeScreenshot();
+      if(!hasStarted.current) setHasStarted(true);
       if(emotionToCopyRef.current === emotionRef.current) {
         setScore((score) => score + 1)
         setBorderColor("green");
       } else{
         setBorderColor("red");
       }
+      takeScreenshot();
     }
 
     const handleKey = (event) => {
@@ -163,19 +173,20 @@ export default function Home({setImageData}) {
         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
           handleEnter();
           setEmotionToCopy(getRandomEmotion(lastIdx));
-          setTimeout(() => {
+          const timeout = setTimeout(() => {
             setBorderColor("white");
-          }, 1000)
+          }, 800)
+          return () => clearTimeout(timeout);
         }
         else if(event.code === 'Digit0' || event.code === 'Numpad0') {
           handlePassBtn();
         }
-        else if(event.code === 'Delete'){
+        else if(event.code === 'NumpadAdd'){
           setIsPaused(true);
         }
       }
       else{
-        if(event.code === 'Digit1' || event.code === 'Numpad1' || event.code === 'Delete') {
+        if(event.code === 'Digit1' || event.code === 'Numpad1' || event.code === 'NumpadAdd') {
           setIsPaused(false);
         }
         else if(event.code === 'Digit2' || event.code === 'Numpad2') {
@@ -211,7 +222,7 @@ export default function Home({setImageData}) {
     const handleRestart = () => {
       setHasStarted(false);
       setIsPaused(false);
-      setTimeout(() => setSeconds(time), 100); // prevent decrement from last game
+      setSeconds(time);
       setEmotionToCopy(getRandomEmotion(lastIdx));
       setImageData([]);
     }
@@ -220,7 +231,6 @@ export default function Home({setImageData}) {
       <div className={`home-app ${emotion}`}>
         <div className='design-grid'></div>
         <div className='design-underlay'></div>
-        
         <div className='app-header'> 
           <div className='timer'>
             {seconds} 
