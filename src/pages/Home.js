@@ -1,16 +1,15 @@
 import * as faceapi from 'face-api.js';
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Popup from '../components/Popup';
+import { useNavigate } from 'react-router-dom';
 
 
 let statusIcons = {
-  angry: { emoji: '/emojis/1.png', color: '#b64518' },
-  disgusted: { emoji: '/emojis/2.png', color: '#1a8d1a' },
-  happy: { emoji: '/emojis/3.png', color: '#148f77' },
-  sad: { emoji: '/emojis/4.png', color: '#767e7e' },
-  surprised: { emoji: '/emojis/5.png', color: '#1230ce' },
-  neutral: { emoji: '/emojis/6.png', color: '#54adad' }
+  angry: { emoji: '/emojis/angry.png', color: '#b64518' },
+  disgusted: { emoji: '/emojis/disgusted.png', color: '#1a8d1a' },
+  happy: { emoji: '/emojis/happy.png', color: '#148f77' },
+  sad: { emoji: '/emojis/sad.png', color: '#767e7e' },
+  surprised: { emoji: '/emojis/surprised.png', color: '#1230ce' },
+  neutral: { emoji: '/emojis/neutral.png', color: '#54adad' }
 }
 const emojis = Object.keys(statusIcons);
 const getRandomEmotion = (lastIdx) => {
@@ -31,7 +30,7 @@ export default function Home({setImageData}) {
     const lastIdx = useRef(-1);   // ensures no consecutive duplicates
     const [emotionToCopy, setEmotionToCopy] = useState(() => getRandomEmotion(lastIdx)); // instruction
     const [emotion, setEmotion] = useState(''); // detected emotion 
-    const [borderColor, setBorderColor] = useState('black'); // video border
+    const [borderColor, setBorderColor] = useState('white'); // video border
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     
@@ -39,6 +38,7 @@ export default function Home({setImageData}) {
     const emotionRef = useRef(emotion);
 
     const hasStartedRef = useRef(hasStarted);
+    const isPausedRef = useRef(isPaused);
 
     useEffect(() => {
       emotionToCopyRef.current = emotionToCopy;
@@ -51,6 +51,10 @@ export default function Home({setImageData}) {
     useEffect(() => {
       hasStartedRef.current = hasStarted;
     }, [hasStarted]);
+
+    useEffect(() => {
+      isPausedRef.current = isPaused;
+    }, [isPaused]);
 
     // Video Stuff
     const videoRef = useRef();
@@ -66,7 +70,7 @@ export default function Home({setImageData}) {
       if(!hasStarted){
           return;
       }
-      if(seconds === -1){
+      if(seconds < 0){
           navigate('/over', { state: { score: score } })
       }
       else{
@@ -139,16 +143,6 @@ export default function Home({setImageData}) {
       }, 100);
     }
 
-    const handleEnterBtn = () => {
-      handleEnter();
-      setBtnDisabled(true)
-      setEmotionToCopy(getRandomEmotion(lastIdx));
-      setTimeout(() => {
-        setBorderColor("black")
-        setBtnDisabled(false);
-      }, 1000);
-    }
-
     const handlePassBtn = () => {
       setHasStarted(true);
       setEmotionToCopy(getRandomEmotion(lastIdx));
@@ -156,26 +150,42 @@ export default function Home({setImageData}) {
 
     const handleEnter = () => {
       setHasStarted(true);
+      takeScreenshot();
       if(emotionToCopyRef.current === emotionRef.current) {
         setScore((score) => score + 1)
         setBorderColor("green");
       } else{
         setBorderColor("red");
       }
-      takeScreenshot();
     }
 
     const handleKey = (event) => {
-        if (event.code === 'Space') {
+      if(!isPausedRef.current){
+        if (event.code === 'Enter' || event.code === 'NumpadEnter') {
           handleEnter();
           setEmotionToCopy(getRandomEmotion(lastIdx));
           setTimeout(() => {
-            setBorderColor("black")
+            setBorderColor("white");
           }, 1000)
         }
         else if(event.code === 'Digit0' || event.code === 'Numpad0') {
           handlePassBtn();
         }
+        else if(event.code === 'Delete' && hasStartedRef.current){
+          handlePause();
+        }
+      }
+      else{
+        if(event.code === 'Digit1' || event.code === 'Numpad1' || event.code === 'Delete') {
+          handleResume();
+        }
+        else if(event.code === 'Digit2' || event.code === 'Numpad2') {
+          handleRestart();
+        }
+        else if (event.code === 'Digit3' || event.code === 'Numpad3') {
+          navigate('/');
+        }
+      }
     }
 
     const takeScreenshot = () => {
@@ -225,46 +235,33 @@ export default function Home({setImageData}) {
             {seconds} 
           </div>
           <div className='instruction'>
-            <h2 className='instruction-header'>Copy this emotion</h2>
-            <h1 className='emotion'>{emotionToCopy.toUpperCase()}</h1>
+            <img className='instruction-header' src='/images/mirror-this.png'/>
+            <h2 className='emotion'>{emotionToCopy.toUpperCase()}</h2>
             <img className='emoji' src={statusIcons[emotionToCopy].emoji} alt="" />
           </div>
           <div className='points'>
-            Points: {score}
+            <img src='/images/points.png' />
+            {score}
           </div>
         </div>
   
         <div className='video-frame'> {/** Middle PART */}
           <div className='frame'>
             <canvas id='video-canvas'></canvas>
-            <video onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} style={{border: `2px solid ${borderColor}`}} ref={videoRef} autoPlay muted></video> 
+            <video onPlay={() => handlePlay(videoRef.current)} id='video' width={`${videoWidth}px`} height={`${videoHeight}px`} style={{border: `15px solid ${borderColor}`}} ref={videoRef} autoPlay muted></video> 
           </div>
-          <div className='emotion'>You are {emotion}</div>
+          <div className='emotion'>YOUR EMOTION: {emotion.toUpperCase()}</div>
         </div>
-        <Popup trigger={isPaused} handleExit={handleResume}>
-          <h3>Paused</h3>
-          <button onClick={() => handleResume()}>Resume</button>
-          <button onClick={() => handleRestart()}>Restart</button>
-        </Popup>
+        {
+          isPaused ?
+          <div className="popup">
+              <div className="popup-inner">
+              <div className='wrapper'></div>
+              </div>
+          </div>
+          : null
+        }
         <div className='app-footer'> {/** Bottom PART */}
-          <div className='app-name'>
-            <h1>Salamin</h1>
-            <h1>Salamin</h1>
-          </div>
-          <div className='app-control'>
-            <div>
-              <h3>Enter</h3>
-              <button onClick={() => handleEnterBtn()} disabled={btnDisabled}>Space</button>
-              <button onClick={() => handlePassBtn()} disabled={btnDisabled}>Pass</button>
-              {
-                hasStartedRef.current ? 
-                <button onClick={() => handlePause()}>Pause</button>       
-              : null}
-            </div>
-            <div>
-                <Link to={`/over`}>TEST</Link>
-            </div>
-          </div>
         </div>
       </div>
     );

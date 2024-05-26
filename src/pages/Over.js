@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas';
 
 
 export default function Over({imageData}) {
+    console.log(imageData);
     const navigate = useNavigate();
     let location = useLocation();
     const score = location.state === null ? 0 : location.state.score

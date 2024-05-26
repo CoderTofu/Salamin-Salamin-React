@@ -18,8 +18,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/home' element={<Home setImageData={setImageData}/>}/>
-          <Route path='/over' element={<Over imageData={imageData}/>}/>
-          
+          <Route path='/over' element={<Over imageData={imageData}/>}/> 
         </Routes>
       </Router>
     </>
