@@ -6,7 +6,6 @@
     justify-content: center;
     align-items: center;
 	background-image: linear-gradient(#b1d7ff, #41aeff);
-	transition: background-image 0.5s ease-in-out; /* Smooth transition */
 }
 
 .home-app.neutral {
